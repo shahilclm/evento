@@ -255,80 +255,202 @@ class _DashboardOverviewScreenState extends State<DashboardOverviewScreen> {
 
   Widget _buildRecentActivity(List<ActivityItem> activities) {
     return Container(
-      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.border.withValues(alpha: 0.8)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.dark.withValues(alpha: 0.03),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
-            children: [
-              Icon(Icons.history_rounded, color: AppColors.primary, size: 22),
-              SizedBox(width: 10),
-              Text(
-                'Recent Activity',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(
+                        Icons.auto_graph_rounded,
+                        color: AppColors.primaryDark,
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    const Text(
+                      'Recent Activity',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.textPrimary,
+                        letterSpacing: -0.5,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
+                TextButton(
+                  onPressed: () {},
+                  style: TextButton.styleFrom(
+                    foregroundColor: AppColors.primaryDark,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      side: BorderSide(
+                        color: AppColors.primary.withValues(alpha: 0.3),
+                      ),
+                    ),
+                  ),
+                  child: const Text(
+                    'View All',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+                  ),
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 16),
-          ...activities.map((a) => _buildActivityTile(a)),
+          const Divider(height: 1, color: AppColors.divider),
+          Padding(
+            padding: const EdgeInsets.all(24),
+            child: ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: activities.length,
+              itemBuilder: (context, index) {
+                return _buildActivityTile(
+                  activities[index],
+                  isLast: index == activities.length - 1,
+                );
+              },
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildActivityTile(ActivityItem activity) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+  Widget _buildActivityTile(ActivityItem activity, {bool isLast = false}) {
+    final typeColor = _getActivityColor(activity.type);
+
+    return IntrinsicHeight(
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(
-              _getActivityIcon(activity.type),
-              color: AppColors.primary,
-              size: 18,
-            ),
+          Column(
+            children: [
+              Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  color: typeColor.withValues(alpha: 0.08),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: typeColor.withValues(alpha: 0.2),
+                    width: 2,
+                  ),
+                ),
+                child: Center(
+                  child: Icon(
+                    _getActivityIcon(activity.type),
+                    color: typeColor,
+                    size: 18,
+                  ),
+                ),
+              ),
+              if (!isLast)
+                Expanded(
+                  child: Container(
+                    width: 1.5,
+                    margin: const EdgeInsets.symmetric(vertical: 8),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          typeColor.withValues(alpha: 0.5),
+                          AppColors.border.withValues(alpha: 0.5),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+            ],
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 20),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const SizedBox(height: 4),
                 Text(
                   activity.message,
                   style: const TextStyle(
-                    fontSize: 13,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
+                    height: 1.3,
                   ),
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  _formatTimestamp(activity.timestamp),
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: AppColors.textMuted,
+                const SizedBox(height: 6),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.background,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    _formatTimestamp(activity.timestamp),
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: AppColors.textMuted,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
+                if (!isLast) const SizedBox(height: 28),
               ],
             ),
           ),
         ],
       ),
     );
+  }
+
+  Color _getActivityColor(String type) {
+    switch (type) {
+      case 'organizer_signup':
+        return Colors.blue;
+      case 'event_created':
+        return Colors.deepPurple;
+      case 'booking':
+        return AppColors.success;
+      case 'withdrawal':
+        return Colors.orange;
+      case 'user_report':
+        return AppColors.destructive;
+      case 'event_completed':
+        return AppColors.success;
+      default:
+        return AppColors.primaryDark;
+    }
   }
 
   IconData _getActivityIcon(String type) {
@@ -355,9 +477,18 @@ class _DashboardOverviewScreenState extends State<DashboardOverviewScreen> {
       final dt = DateTime.parse(timestamp);
       final now = DateTime.now();
       final diff = now.difference(dt);
-      if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
-      if (diff.inHours < 24) return '${diff.inHours}h ago';
-      return DateFormat('MMM d, h:mm a').format(dt);
+
+      if (diff.inMinutes < 1) return 'Just now';
+      if (diff.inMinutes < 60) {
+        return '${diff.inMinutes} ${diff.inMinutes == 1 ? 'min' : 'mins'} ago';
+      }
+      if (diff.inHours < 24) {
+        return '${diff.inHours} ${diff.inHours == 1 ? 'hour' : 'hours'} ago';
+      }
+      if (diff.inDays < 7) {
+        return '${diff.inDays} ${diff.inDays == 1 ? 'day' : 'days'} ago';
+      }
+      return DateFormat('MMM d, yyyy').format(dt);
     } catch (_) {
       return timestamp;
     }

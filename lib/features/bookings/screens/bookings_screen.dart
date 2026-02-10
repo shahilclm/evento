@@ -6,7 +6,6 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/widgets/confirmation_dialog.dart';
 import '../../../core/widgets/error_widget.dart';
 import '../../../core/widgets/loading_widget.dart';
-import '../../../core/widgets/stat_card.dart';
 import '../../../core/widgets/status_badge.dart';
 import '../models/booking.dart';
 import '../providers/booking_provider.dart';
@@ -188,37 +187,161 @@ class _BookingsScreenState extends State<BookingsScreen>
           physics: const NeverScrollableScrollPhysics(),
           mainAxisSpacing: 16,
           crossAxisSpacing: 16,
-          childAspectRatio: 1.5,
+          childAspectRatio: constraints.maxWidth > 800 ? 1.5 : 1.3,
           children: [
-            StatCard(
+            _revenueCard(
               title: 'Total Revenue',
               value: currencyFormatter.format(stats.totalRevenue),
               icon: Icons.account_balance_rounded,
-              iconColor: AppColors.primary,
               trend: stats.revenueTrend,
+              isPrimary: true,
             ),
-            StatCard(
+            _revenueCard(
               title: 'This Month',
               value: currencyFormatter.format(stats.thisMonthRevenue),
               icon: Icons.calendar_month_rounded,
-              iconColor: AppColors.primaryLight,
             ),
-            StatCard(
-              title: 'Commission Earned',
+            _revenueCard(
+              title: 'Commission',
               value: currencyFormatter.format(stats.totalCommission),
-              icon: Icons.percent_rounded,
-              iconColor: AppColors.primary,
+              icon: Icons.account_balance_wallet_rounded,
               trend: stats.commissionTrend,
             ),
-            StatCard(
+            _revenueCard(
               title: 'Pending Payouts',
               value: currencyFormatter.format(stats.pendingPayouts),
               icon: Icons.hourglass_bottom_rounded,
-              iconColor: AppColors.primaryLight,
+              iconColor: AppColors.destructive,
             ),
           ],
         );
       },
+    );
+  }
+
+  Widget _revenueCard({
+    required String title,
+    required String value,
+    required IconData icon,
+    String? trend,
+    bool isPrimary = false,
+    Color? iconColor,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isPrimary
+              ? AppColors.primary.withValues(alpha: 0.5)
+              : AppColors.border,
+          width: isPrimary ? 1.5 : 1,
+        ),
+        boxShadow: [
+          if (isPrimary)
+            BoxShadow(
+              color: AppColors.primary.withValues(alpha: 0.1),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+          BoxShadow(
+            color: AppColors.dark.withValues(alpha: 0.02),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Stack(
+        children: [
+          if (isPrimary)
+            Positioned(
+              right: -15,
+              top: -15,
+              child: Icon(
+                icon,
+                size: 80,
+                color: AppColors.primary.withValues(alpha: 0.05),
+              ),
+            ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: (iconColor ?? AppColors.primary).withValues(
+                          alpha: 0.1,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Icon(
+                        icon,
+                        color: iconColor ?? AppColors.primaryDark,
+                        size: 18,
+                      ),
+                    ),
+                    if (trend != null)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.success.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          trend,
+                          style: const TextStyle(
+                            color: AppColors.success,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                const Spacer(),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: AppColors.textMuted,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    value,
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.textPrimary,
+                      letterSpacing: -0.5,
+                      shadows: [
+                        if (isPrimary)
+                          Shadow(
+                            color: AppColors.primary.withValues(alpha: 0.3),
+                            blurRadius: 10,
+                            offset: const Offset(0, 2),
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
