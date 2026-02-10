@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/widgets/error_widget.dart';
-import '../../../core/widgets/loading_widget.dart';
+import '../../../core/widgets/shimmer_loading.dart';
 import '../../../core/widgets/stat_card.dart';
 import '../models/dashboard_stats.dart';
 import '../providers/dashboard_provider.dart';
@@ -30,7 +30,7 @@ class _DashboardOverviewScreenState extends State<DashboardOverviewScreen> {
     return Consumer<DashboardProvider>(
       builder: (context, provider, _) {
         if (provider.isLoading && provider.stats == null) {
-          return const LoadingWidget(message: 'Loading dashboard...');
+          return const DashboardShimmer();
         }
         if (provider.error != null && provider.stats == null) {
           return AppErrorWidget(
@@ -39,7 +39,7 @@ class _DashboardOverviewScreenState extends State<DashboardOverviewScreen> {
           );
         }
         final stats = provider.stats;
-        if (stats == null) return const LoadingWidget();
+        if (stats == null) return const DashboardShimmer();
 
         return RefreshIndicator(
           onRefresh: () => provider.fetchStats(),
