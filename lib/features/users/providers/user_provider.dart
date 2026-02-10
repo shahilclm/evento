@@ -53,22 +53,25 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Block a user.
-  Future<void> blockUser(String id) async {
-    await _api.updateUserStatus(id, 'blocked');
+  /// Toggle user status between active and blocked.
+  Future<void> toggleUserStatus(String id) async {
     final index = _users.indexWhere((u) => u.id == id);
     if (index != -1) {
-      _users[index].status = 'blocked';
+      final newStatus = _users[index].status == 'blocked'
+          ? 'active'
+          : 'blocked';
+      await _api.updateUserStatus(id, newStatus);
+      _users[index].status = newStatus;
       notifyListeners();
     }
   }
 
-  /// Unblock a user.
-  Future<void> unblockUser(String id) async {
-    await _api.updateUserStatus(id, 'active');
+  /// Update user status.
+  Future<void> updateUserStatus(String id, String status) async {
+    await _api.updateUserStatus(id, status);
     final index = _users.indexWhere((u) => u.id == id);
     if (index != -1) {
-      _users[index].status = 'active';
+      _users[index].status = status;
       notifyListeners();
     }
   }

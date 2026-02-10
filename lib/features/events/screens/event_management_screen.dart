@@ -10,6 +10,7 @@ import '../../../core/widgets/loading_widget.dart';
 import '../../../core/widgets/status_badge.dart';
 import '../models/event.dart';
 import '../providers/event_provider.dart';
+import 'event_details_screen.dart';
 
 /// Event management screen with tabbed view.
 class EventManagementScreen extends StatefulWidget {
@@ -157,84 +158,91 @@ class _EventManagementScreenState extends State<EventManagementScreen>
       decimalDigits: 0,
     );
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+    return InkWell(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => EventDetailsScreen(event: event)),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    _getCategoryIcon(event.category),
+                    color: AppColors.primary,
+                    size: 22,
+                  ),
                 ),
-                child: Icon(
-                  _getCategoryIcon(event.category),
-                  color: AppColors.primary,
-                  size: 22,
-                ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      event.title,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        event.title,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      'by ${event.organizerName}',
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: AppColors.textSecondary,
+                      const SizedBox(height: 2),
+                      Text(
+                        'by ${event.organizerName}',
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: AppColors.textSecondary,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              StatusBadge.fromStatus(event.status),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Wrap(
-            spacing: 20,
-            runSpacing: 8,
-            children: [
-              _detailChip(Icons.calendar_today, event.date),
-              _detailChip(Icons.location_on_outlined, event.venue),
-              _detailChip(
-                Icons.confirmation_number_outlined,
-                event.ticketPrice > 0
-                    ? currencyFormatter.format(event.ticketPrice)
-                    : 'Free',
-              ),
-              _detailChip(
-                Icons.people_outline,
-                '${event.bookingsCount} bookings',
-              ),
-              _detailChip(Icons.category_outlined, event.category),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: _buildEventActions(provider, event),
-          ),
-        ],
+                StatusBadge.fromStatus(event.status),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Wrap(
+              spacing: 20,
+              runSpacing: 8,
+              children: [
+                _detailChip(Icons.calendar_today, event.date),
+                _detailChip(Icons.location_on_outlined, event.venue),
+                _detailChip(
+                  Icons.confirmation_number_outlined,
+                  event.ticketPrice > 0
+                      ? currencyFormatter.format(event.ticketPrice)
+                      : 'Free',
+                ),
+                _detailChip(
+                  Icons.people_outline,
+                  '${event.bookingsCount} bookings',
+                ),
+                _detailChip(Icons.category_outlined, event.category),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: _buildEventActions(provider, event),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -248,7 +256,7 @@ class _EventManagementScreenState extends State<EventManagementScreen>
           'Approve',
           Icons.check_circle_outline,
           AppColors.success,
-          () => provider.approveEvent(event.id),
+          () => provider.updateEventStatus(event.id, 'approved'),
         ),
         const SizedBox(width: 8),
         _buildActionChip(
@@ -263,7 +271,7 @@ class _EventManagementScreenState extends State<EventManagementScreen>
               confirmLabel: 'Reject',
               isDestructive: true,
             );
-            if (confirm) provider.rejectEvent(event.id);
+            if (confirm) provider.updateEventStatus(event.id, 'rejected');
           },
         ),
       ]);
@@ -281,7 +289,7 @@ class _EventManagementScreenState extends State<EventManagementScreen>
               confirmLabel: 'Cancel Event',
               isDestructive: true,
             );
-            if (confirm) provider.cancelEvent(event.id);
+            if (confirm) provider.updateEventStatus(event.id, 'cancelled');
           },
         ),
       );

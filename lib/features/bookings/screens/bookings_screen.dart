@@ -9,6 +9,7 @@ import '../../../core/widgets/loading_widget.dart';
 import '../../../core/widgets/status_badge.dart';
 import '../models/booking.dart';
 import '../providers/booking_provider.dart';
+import 'booking_details_screen.dart';
 
 /// Bookings & payments screen — redesigned with responsive cards and tabs.
 class BookingsScreen extends StatefulWidget {
@@ -352,64 +353,71 @@ class _BookingsScreenState extends State<BookingsScreen>
       decimalDigits: 0,
     );
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+    return InkWell(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => BookingDetailsScreen(booking: b)),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ── Header: ID + Payment Status ──
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                b.id,
-                style: const TextStyle(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 14,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ── Header: ID + Payment Status ──
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  b.id,
+                  style: const TextStyle(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                  ),
                 ),
-              ),
-              _buildPaymentBadge(b.paymentStatus),
-            ],
-          ),
-          const SizedBox(height: 12),
-
-          // ── Event Title ──
-          Text(
-            b.eventTitle,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
+                _buildPaymentBadge(b.paymentStatus),
+              ],
             ),
-          ),
-          const SizedBox(height: 16),
-          const Divider(height: 1, color: AppColors.divider),
-          const SizedBox(height: 16),
+            const SizedBox(height: 12),
 
-          // ── Stats Wrap ──
-          Wrap(
-            spacing: 20,
-            runSpacing: 10,
-            children: [
-              _statChip(Icons.person_outline, b.userName),
-              _statChip(
-                Icons.confirmation_num_outlined,
-                '${b.ticketCount} tickets',
+            // ── Event Title ──
+            Text(
+              b.eventTitle,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
               ),
-              _statChip(
-                Icons.payments_outlined,
-                currencyFormatter.format(b.amount),
-              ),
-              _statChip(Icons.calendar_today_outlined, b.bookingDate),
-            ],
-          ),
-        ],
+            ),
+            const SizedBox(height: 16),
+            const Divider(height: 1, color: AppColors.divider),
+            const SizedBox(height: 16),
+
+            // ── Stats Wrap ──
+            Wrap(
+              spacing: 20,
+              runSpacing: 10,
+              children: [
+                _statChip(Icons.person_outline, b.userName),
+                _statChip(
+                  Icons.confirmation_num_outlined,
+                  '${b.ticketCount} tickets',
+                ),
+                _statChip(
+                  Icons.payments_outlined,
+                  currencyFormatter.format(b.amount),
+                ),
+                _statChip(Icons.calendar_today_outlined, b.bookingDate),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -35,6 +35,7 @@ class AppColors {
   // ── 5. Destructive & Success ──
   static const Color destructive = Color(0xFFE54D4D);
   static const Color success = Color(0xFF2ECC71);
+  static const Color warning = Color(0xFFF1C40F);
 
   // ── Derived ──
   static const LinearGradient primaryGradient = LinearGradient(

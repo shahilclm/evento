@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../core/services/mock_api_service.dart';
 import '../models/organizer.dart';
 
@@ -79,12 +80,12 @@ class OrganizerProvider extends ChangeNotifier {
     }
   }
 
-  /// Unblock an organizer.
-  Future<void> unblockOrganizer(String id) async {
-    await _api.updateOrganizerStatus(id, 'approved');
+  /// Update organizer status.
+  Future<void> updateOrganizerStatus(String id, String status) async {
+    await _api.updateOrganizerStatus(id, status);
     final index = _organizers.indexWhere((o) => o.id == id);
     if (index != -1) {
-      _organizers[index].status = 'approved';
+      _organizers[index].status = status;
       notifyListeners();
     }
   }

@@ -11,6 +11,7 @@ import '../../../core/widgets/search_field.dart';
 import '../../../core/widgets/status_badge.dart';
 import '../models/organizer.dart';
 import '../providers/organizer_provider.dart';
+import 'organizer_details_screen.dart';
 
 /// Organizer management screen — responsive card layout.
 class OrganizerManagementScreen extends StatefulWidget {
@@ -99,89 +100,98 @@ class _OrganizerManagementScreenState extends State<OrganizerManagementScreen> {
       decimalDigits: 0,
     );
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+    return InkWell(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => OrganizerDetailsScreen(organizer: org),
+        ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ── Top: Avatar + Name + Status ──
-          Row(
-            children: [
-              CircleAvatar(
-                radius: 22,
-                backgroundColor: AppColors.primary.withValues(alpha: 0.12),
-                child: Text(
-                  org.name[0],
-                  style: const TextStyle(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ── Top: Avatar + Name + Status ──
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 22,
+                  backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+                  child: Text(
+                    org.name[0],
+                    style: const TextStyle(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 18,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      org.name,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        org.name,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      org.email,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: AppColors.textMuted,
+                      const SizedBox(height: 2),
+                      Text(
+                        org.email,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: AppColors.textMuted,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              StatusBadge.fromStatus(org.status),
-            ],
-          ),
+                StatusBadge.fromStatus(org.status),
+              ],
+            ),
 
-          const SizedBox(height: 16),
-          const Divider(height: 1, color: AppColors.divider),
-          const SizedBox(height: 16),
+            const SizedBox(height: 16),
+            const Divider(height: 1, color: AppColors.divider),
+            const SizedBox(height: 16),
 
-          // ── Stats ──
-          Wrap(
-            spacing: 20,
-            runSpacing: 10,
-            children: [
-              _statChip(Icons.phone_outlined, org.phone),
-              _statChip(Icons.event_rounded, '${org.eventsCount} events'),
-              _statChip(
-                Icons.account_balance_wallet_outlined,
-                currencyFormatter.format(org.totalRevenue),
-              ),
-              _statChip(
-                Icons.calendar_today_outlined,
-                'Joined ${org.joinedDate}',
-              ),
-            ],
-          ),
+            // ── Stats ──
+            Wrap(
+              spacing: 20,
+              runSpacing: 10,
+              children: [
+                _statChip(Icons.phone_outlined, org.phone),
+                _statChip(Icons.event_rounded, '${org.eventsCount} events'),
+                _statChip(
+                  Icons.account_balance_wallet_outlined,
+                  currencyFormatter.format(org.totalRevenue),
+                ),
+                _statChip(
+                  Icons.calendar_today_outlined,
+                  'Joined ${org.joinedDate}',
+                ),
+              ],
+            ),
 
-          const SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-          // ── Actions ──
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: _buildActions(provider, org),
-          ),
-        ],
+            // ── Actions ──
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: _buildActions(provider, org),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -205,14 +215,14 @@ class _OrganizerManagementScreenState extends State<OrganizerManagementScreen> {
 
     if (org.status == 'pending') {
       actions.addAll([
-        _actionChip(
+        _buildActionChip(
           'Approve',
           Icons.check_circle_outline,
           AppColors.success,
-          () => provider.approveOrganizer(org.id),
+          () => provider.updateOrganizerStatus(org.id, 'approved'),
         ),
         const SizedBox(width: 8),
-        _actionChip(
+        _buildActionChip(
           'Reject',
           Icons.cancel_outlined,
           AppColors.destructive,
@@ -224,13 +234,13 @@ class _OrganizerManagementScreenState extends State<OrganizerManagementScreen> {
               confirmLabel: 'Reject',
               isDestructive: true,
             );
-            if (confirm) provider.rejectOrganizer(org.id);
+            if (confirm) provider.updateOrganizerStatus(org.id, 'rejected');
           },
         ),
       ]);
     } else if (org.status == 'approved') {
       actions.add(
-        _actionChip('Block', Icons.block, AppColors.destructive, () async {
+        _buildActionChip('Block', Icons.block, AppColors.destructive, () async {
           final confirm = await ConfirmationDialog.show(
             context,
             title: 'Block Organizer',
@@ -238,16 +248,19 @@ class _OrganizerManagementScreenState extends State<OrganizerManagementScreen> {
             confirmLabel: 'Block',
             isDestructive: true,
           );
-          if (confirm) provider.blockOrganizer(org.id);
+          if (confirm) provider.updateOrganizerStatus(org.id, 'blocked');
         }),
       );
     } else if (org.status == 'blocked') {
       actions.add(
-        _actionChip(
-          'Unblock',
-          Icons.lock_open,
-          AppColors.primary,
-          () => provider.unblockOrganizer(org.id),
+        _buildActionChip(
+          org.status == 'blocked' ? 'Unblock' : 'Block',
+          org.status == 'blocked' ? Icons.lock_open : Icons.block,
+          org.status == 'blocked' ? AppColors.success : AppColors.destructive,
+          () => provider.updateOrganizerStatus(
+            org.id,
+            org.status == 'blocked' ? 'approved' : 'blocked',
+          ),
         ),
       );
     }
@@ -255,7 +268,7 @@ class _OrganizerManagementScreenState extends State<OrganizerManagementScreen> {
     return actions;
   }
 
-  Widget _actionChip(
+  Widget _buildActionChip(
     String label,
     IconData icon,
     Color color,

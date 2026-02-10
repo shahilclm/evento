@@ -79,12 +79,12 @@ class EventProvider extends ChangeNotifier {
     }
   }
 
-  /// Cancel an event.
-  Future<void> cancelEvent(String id) async {
-    await _api.updateEventStatus(id, 'cancelled');
+  /// Update event status.
+  Future<void> updateEventStatus(String id, String status) async {
+    await _api.updateEventStatus(id, status);
     final index = _events.indexWhere((e) => e.id == id);
     if (index != -1) {
-      _events[index].status = 'cancelled';
+      _events[index].status = status;
       notifyListeners();
     }
   }

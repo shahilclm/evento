@@ -3,12 +3,12 @@ import 'package:provider/provider.dart';
 
 import 'core/theme/app_theme.dart';
 import 'features/auth/providers/auth_provider.dart';
-import 'features/auth/screens/login_screen.dart';
 import 'features/bookings/providers/booking_provider.dart';
 import 'features/dashboard/providers/dashboard_provider.dart';
 import 'features/events/providers/event_provider.dart';
 import 'features/organizers/providers/organizer_provider.dart';
 import 'features/settings/providers/settings_provider.dart';
+import 'features/splash/screens/splash_screen.dart';
 import 'features/users/providers/user_provider.dart';
 
 void main() {
@@ -35,7 +35,7 @@ class EventoAdminApp extends StatelessWidget {
         title: 'Evento Admin',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.darkTheme,
-        home: const LoginScreen(),
+        home: const SplashScreen(),
       ),
     );
   }

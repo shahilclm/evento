@@ -11,6 +11,7 @@ import '../../../core/widgets/search_field.dart';
 import '../../../core/widgets/status_badge.dart';
 import '../models/app_user.dart';
 import '../providers/user_provider.dart';
+import 'user_details_screen.dart';
 
 /// User management screen — redesigned card layout.
 class UserManagementScreen extends StatefulWidget {
@@ -93,119 +94,128 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
   }
 
   Widget _buildUserCard(UserProvider provider, AppUser user) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+    return InkWell(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => UserDetailsScreen(user: user)),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ── Top: Avatar + Name + Status ──
-          Row(
-            children: [
-              CircleAvatar(
-                radius: 22,
-                backgroundColor: AppColors.primary.withValues(alpha: 0.12),
-                child: Text(
-                  user.name[0],
-                  style: const TextStyle(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ── Top: Avatar + Name + Status ──
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 22,
+                  backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+                  child: Text(
+                    user.name[0],
+                    style: const TextStyle(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 18,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      user.name,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        user.name,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      user.email,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: AppColors.textMuted,
+                      const SizedBox(height: 2),
+                      Text(
+                        user.email,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: AppColors.textMuted,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              StatusBadge.fromStatus(user.status),
-            ],
-          ),
+                StatusBadge.fromStatus(user.status),
+              ],
+            ),
 
-          const SizedBox(height: 16),
-          const Divider(height: 1, color: AppColors.divider),
-          const SizedBox(height: 16),
+            const SizedBox(height: 16),
+            const Divider(height: 1, color: AppColors.divider),
+            const SizedBox(height: 16),
 
-          // ── Stats ──
-          Wrap(
-            spacing: 20,
-            runSpacing: 10,
-            children: [
-              _statChip(Icons.phone_outlined, user.phone),
-              _statChip(
-                Icons.confirmation_num_outlined,
-                '${user.bookingsCount} bookings',
-              ),
-              _statChip(
-                Icons.calendar_today_outlined,
-                'Joined ${user.joinedDate}',
-              ),
-            ],
-          ),
+            // ── Stats ──
+            Wrap(
+              spacing: 20,
+              runSpacing: 10,
+              children: [
+                _statChip(Icons.phone_outlined, user.phone),
+                _statChip(
+                  Icons.confirmation_num_outlined,
+                  '${user.bookingsCount} bookings',
+                ),
+                _statChip(
+                  Icons.calendar_today_outlined,
+                  'Joined ${user.joinedDate}',
+                ),
+              ],
+            ),
 
-          const SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-          // ── Actions ──
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              _actionChip(
-                'History',
-                Icons.history,
-                AppColors.primary,
-                () => _showBookingHistory(provider, user),
-              ),
-              const SizedBox(width: 8),
-              if (user.status == 'active')
+            // ── Actions ──
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
                 _actionChip(
-                  'Block',
-                  Icons.block,
-                  AppColors.destructive,
-                  () async {
-                    final confirm = await ConfirmationDialog.show(
-                      context,
-                      title: 'Block User',
-                      message: 'Are you sure you want to block "${user.name}"?',
-                      confirmLabel: 'Block',
-                      isDestructive: true,
-                    );
-                    if (confirm) provider.blockUser(user.id);
-                  },
-                )
-              else if (user.status == 'blocked')
-                _actionChip(
-                  'Unblock',
-                  Icons.lock_open,
+                  'History',
+                  Icons.history,
                   AppColors.primary,
-                  () => provider.unblockUser(user.id),
+                  () => _showBookingHistory(provider, user),
                 ),
-            ],
-          ),
-        ],
+                const SizedBox(width: 8),
+                if (user.status == 'active')
+                  _actionChip(
+                    'Block',
+                    Icons.block,
+                    AppColors.destructive,
+                    () async {
+                      final confirm = await ConfirmationDialog.show(
+                        context,
+                        title: 'Block User',
+                        message:
+                            'Are you sure you want to block "${user.name}"?',
+                        confirmLabel: 'Block',
+                        isDestructive: true,
+                      );
+                      if (confirm)
+                        provider.updateUserStatus(user.id, 'blocked');
+                    },
+                  )
+                else if (user.status == 'blocked')
+                  _actionChip(
+                    'Unblock',
+                    Icons.lock_open,
+                    AppColors.primary,
+                    () => provider.updateUserStatus(user.id, 'active'),
+                  ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

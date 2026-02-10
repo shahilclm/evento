@@ -6,6 +6,7 @@ class Booking {
   final double amount;
   final String paymentStatus;
   final String bookingDate;
+  final String eventDate;
   final int ticketCount;
 
   const Booking({
@@ -15,6 +16,7 @@ class Booking {
     required this.amount,
     required this.paymentStatus,
     required this.bookingDate,
+    required this.eventDate,
     required this.ticketCount,
   });
 
@@ -26,6 +28,8 @@ class Booking {
       amount: (json['amount'] as num).toDouble(),
       paymentStatus: json['paymentStatus'] as String,
       bookingDate: json['bookingDate'] as String,
+      eventDate:
+          json['eventDate'] as String? ?? '2026-03-20', // Default for safety
       ticketCount: json['ticketCount'] as int,
     );
   }

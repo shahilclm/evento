@@ -322,6 +322,7 @@ class MockApiService {
         'amount': 999.0,
         'paymentStatus': 'completed',
         'bookingDate': '2026-02-08',
+        'eventDate': '2026-03-22',
         'ticketCount': 1,
       },
       {
@@ -331,6 +332,7 @@ class MockApiService {
         'amount': 1000.0,
         'paymentStatus': 'completed',
         'bookingDate': '2026-02-07',
+        'eventDate': '2026-02-28',
         'ticketCount': 2,
       },
       {
@@ -340,6 +342,7 @@ class MockApiService {
         'amount': 800.0,
         'paymentStatus': 'pending',
         'bookingDate': '2026-02-10',
+        'eventDate': '2026-05-10',
         'ticketCount': 4,
       },
       {
@@ -349,6 +352,7 @@ class MockApiService {
         'amount': 1200.0,
         'paymentStatus': 'completed',
         'bookingDate': '2026-02-06',
+        'eventDate': '2026-03-08',
         'ticketCount': 2,
       },
       {
@@ -358,6 +362,7 @@ class MockApiService {
         'amount': 350.0,
         'paymentStatus': 'failed',
         'bookingDate': '2026-02-09',
+        'eventDate': '2026-04-20',
         'ticketCount': 1,
       },
       {
@@ -367,6 +372,7 @@ class MockApiService {
         'amount': 2997.0,
         'paymentStatus': 'completed',
         'bookingDate': '2026-02-05',
+        'eventDate': '2026-03-22',
         'ticketCount': 3,
       },
       {
@@ -376,6 +382,7 @@ class MockApiService {
         'amount': 600.0,
         'paymentStatus': 'refunded',
         'bookingDate': '2026-02-04',
+        'eventDate': '2026-05-10',
         'ticketCount': 3,
       },
     ]);
