@@ -23,4 +23,14 @@ class AdminUser {
       token: json['token'] as String,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'email': email,
+      'role': role,
+      'token': token,
+    };
+  }
 }

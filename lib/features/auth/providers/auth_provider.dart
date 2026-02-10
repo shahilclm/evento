@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/services/mock_api_service.dart';
 import '../models/admin_user.dart';
@@ -40,6 +43,28 @@ class AuthProvider extends ChangeNotifier {
     return null;
   }
 
+  /// Try to auto-login using persisted data.
+  Future<bool> tryAutoLogin() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      if (!prefs.containsKey('user_data')) return false;
+
+      final userData =
+          jsonDecode(prefs.getString('user_data')!) as Map<String, dynamic>;
+      _user = AdminUser.fromJson(userData);
+      notifyListeners();
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /// Persist user data to local storage.
+  Future<void> _persistUser(AdminUser user) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user_data', jsonEncode(user.toJson()));
+  }
+
   /// Login with email and password.
   Future<bool> login(String email, String password) async {
     _isLoading = true;
@@ -51,6 +76,7 @@ class AuthProvider extends ChangeNotifier {
 
       if (response['success'] == true) {
         _user = AdminUser.fromJson(response['data']);
+        await _persistUser(_user!);
         _isLoading = false;
         notifyListeners();
         return true;
@@ -61,7 +87,7 @@ class AuthProvider extends ChangeNotifier {
         return false;
       }
     } catch (e) {
-      _errorMessage = 'Network error. Please try again.';
+      _errorMessage = 'Login failed. Please restart the app and try again.';
       _isLoading = false;
       notifyListeners();
       return false;
@@ -69,9 +95,11 @@ class AuthProvider extends ChangeNotifier {
   }
 
   /// Logout the current admin.
-  void logout() {
+  Future<void> logout() async {
     _user = null;
     _errorMessage = null;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('user_data');
     notifyListeners();
   }
 

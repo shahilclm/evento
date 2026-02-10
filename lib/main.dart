@@ -12,6 +12,7 @@ import 'features/splash/screens/splash_screen.dart';
 import 'features/users/providers/user_provider.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const EventoAdminApp());
 }
 
