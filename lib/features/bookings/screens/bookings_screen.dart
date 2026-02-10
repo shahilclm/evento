@@ -421,8 +421,11 @@ class _BookingsScreenState extends State<BookingsScreen>
             ],
           ),
           const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            spacing: 16,
+            runSpacing: 12,
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               Text(
                 withdrawal.requestDate,
@@ -431,19 +434,19 @@ class _BookingsScreenState extends State<BookingsScreen>
                   fontSize: 12,
                 ),
               ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
+              Wrap(
+                spacing: 12,
+                runSpacing: 8,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   StatusBadge.fromStatus(withdrawal.status),
                   if (withdrawal.status == 'pending') ...[
-                    const SizedBox(width: 12),
                     _actionChip(
                       'Approve',
                       Icons.check_circle_outline,
                       AppColors.success,
                       () => provider.approveWithdrawal(withdrawal.id),
                     ),
-                    const SizedBox(width: 8),
                     _actionChip(
                       'Reject',
                       Icons.cancel_outlined,
